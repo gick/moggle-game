@@ -2,7 +2,7 @@
   <v-ons-toolbar>
     <div class="left">
       <slot name="left">
-        <v-ons-back-button v-if="backLabel">
+        <v-ons-back-button>
           {{ backLabel }}
         </v-ons-back-button>
       </slot>

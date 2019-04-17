@@ -12,16 +12,28 @@
     "deploy": "npm run build && npm run demo:index && gh-pages -d www"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "browser-image-compression": "^1.0.2",
+    "exif-orientation-image": "^1.0.1",
+    "firebase": "^5.9.4",
     "gh-pages": "^1.2.0",
+    "leaflet": "^1.4.0",
     "onsenui": "^2.10.2",
-    "vue": "^2.5.3",
+    "vue": "^2.6.10",
     "vue-onsenui": "^2.6.1",
-    "vuex": "^3.0.1"
+    "vue-picture-input": "^2.1.6",
+    "vue-signature-pad": "^1.1.9-beta.1",
+    "vue-simple-markdown": "^1.0.9",
+    "vue-socket.io": "^3.0.7",
+    "vue2-leaflet": "^2.0.3",
+    "vuex": "^3.0.1",
+    "vuexfire": "^3.0.0-alpha.16"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "copy-webpack-plugin": "^4.0.1",
     "cross-env": "^3.0.0",

@@ -1,65 +1,40 @@
 <template>
   <v-ons-page>
-    <p class="intro">
-      This is a kitchen sink example that shows off the Vue bindings for Onsen UI.<br><br>
-    </p>
+    <v-ons-list>
+      <v-ons-list-item @click="startActivity(activity)" v-for="(activity, index) in activityList" :key="index">
+        <div class="center">{{activity.label}}</div>
 
-    <v-ons-card v-for="page of pages" :key="page.label"
-      @click="push(page.component, page.label)"
-    >
-      <div class="title">{{ page.label }}</div>
-      <div class="content">{{ page.desc }}</div>
-    </v-ons-card>
+      </v-ons-list-item>
+    </v-ons-list>
+    <v-ons-button @click="authenticate">Auth</v-ons-button>
+    <v-ons-button @click="bind">Bind</v-ons-button>
   </v-ons-page>
 </template>
 
 <script>
-import PullHook from './PullHook.vue';
-import Dialogs from './Dialogs.vue';
-import Buttons from './Buttons.vue';
-import Carousel from './Carousel.vue';
-import InfiniteScroll from './InfiniteScroll.vue';
-import Progress from './Progress.vue';
 
 export default {
   data () {
     return {
-      pages: [
-        {
-          component: PullHook,
-          label: 'Pull Hook',
-          desc: 'Simple "pull to refresh" functionality to update data.'
-        },
-        {
-          component: Dialogs,
-          label: 'Dialogs',
-          desc: 'Components and utility methods to display many types of dialogs.'
-        },
-        {
-          component: Buttons,
-          label: 'Buttons',
-          desc: 'Different styles for buttons, floating action buttons and speed dials.'
-        },
-        {
-          component: Carousel,
-          label: 'Carousel',
-          desc: 'Customizable carousel that can be optionally fullscreen.'
-        },
-        {
-          component: InfiniteScroll,
-          label: 'Infinite Scroll',
-          desc: 'Two types of infinite lists: "Load More" and "Lazy Repeat".'
-        },
-        {
-          component: Progress,
-          label: 'Progress',
-          desc: 'Linear progress, circular progress and spinners.'
-        }
-      ]
     };
+  },
+  computed:{
+    activityList(){
+      return this.$store.state.activities.activities
+    }
   },
 
   methods: {
+    startActivity(activity){
+      this.$store.commit('activities/setCurrentActivity',activity)
+    },
+    authenticate(){
+      this.$store.dispatch('activities/authenticate')
+    }
+    ,
+    bind(){
+      this.$store.dispatch('user/bindTodos')
+    },
     push(page, key) {
       this.$store.commit('navigator/push', {
         extends: page,
