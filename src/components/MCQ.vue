@@ -12,7 +12,8 @@
         </v-ons-list-item>
         <v-ons-list-item v-for="(response, $index) in mcq.distractors" :key="$index" tappable>
           <label class="left">
-            <v-ons-radio modifier="material"
+            <v-ons-radio :disabled="correct || incorrect" 
+              modifier="material"
               :input-id="'radio-' + $index"
               :value="response.value"
               v-model=" currentResponse"
@@ -21,12 +22,16 @@
           <label :for="'radio-' + $index" class="center" v-if="!mcq.imageMode">{{ response.value }}</label>
           <ImagePreview :image-id="response.value" v-if="mcq.imageMode"></ImagePreview>
         </v-ons-list-item>
-        <v-ons-list-item>
+        <v-ons-list-item v-if="!(correct || incorrect)">
           <div class="center">
-              <v-ons-button @click="validate">Valider</v-ons-button>
+              <v-ons-button  @click="validate">Valider</v-ons-button>
           </div>
+
         </v-ons-list-item>
       </v-ons-list>
+          <p v-if="correct"><v-ons-icon icon="fa-check-circle"></v-ons-icon> {{mcq.correctMessage}}</p>
+          <p v-if="incorrect"><v-ons-icon icon="fa-times-circle"></v-ons-icon> {{mcq.wrongMessage}}</p>
+
     </div>
   </v-ons-card>
 </template>
@@ -36,7 +41,9 @@ import ImagePreview from './ImagePreview.vue'
 export default {
   data() {
     return {
-      currentResponse: ""
+      currentResponse: "",
+        correct:false,
+        incorrect:false
     };
   },
   components:{
@@ -49,6 +56,14 @@ export default {
 
   methods: {
     validate() {
+        if(this.mcq.response.toLowerCase()==this.currentResponse.toLowerCase()){
+            this.correct=true
+            this.$ons.notification.toast('+ '+this.mcq.score+' pts',{ timeout: 2000 } )
+            this.$store.commit('activities/addScore',this.mcq.score)
+        } 
+        else{
+            this.incorrect=true
+        }
     }
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <v-ons-toolbar>
     <div class="center">
-      <slot>{{ title }}</slot>
+      <slot>{{ title }} {{$store.state.activities.score}}</slot>
     </div>
     <div class="right">
       <v-ons-toolbar-button id="info-button" @click="popoverVisible = true">

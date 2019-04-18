@@ -2,7 +2,7 @@
   <v-ons-page>
     <custom-toolbar title="Score" backLabel></custom-toolbar>
     <v-ons-card>
-        Score
+        Score : {{$store.state.activities.score}}
     </v-ons-card>
   </v-ons-page>
 </template>
@@ -13,7 +13,9 @@ export default {
     return {
     };
   },
-  computed: {},
+  computed: {
+
+  },
   mounted() {
   },
   methods: {
