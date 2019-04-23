@@ -14,6 +14,7 @@ import AppSplitter from "./AppSplitter.vue";
 import axios from "axios";
 export default {
   beforeCreate() {
+
     this.$store.commit("navigator/push", AppSplitter);
     axios.get("http://localhost:8080/listActivities").then(
       function(response) {
@@ -47,7 +48,7 @@ export default {
       if(this.activity){
       let pageIndex = this.$store.state.activities.currentPage;
       let currentPage = this.$store.state.activities.pages[pageIndex];
-      this.$store.commit("navigator/replace", {
+      this.$store.commit("navigator/push", {
         extends: currentPage.page,
         data() {
           return currentPage.data;

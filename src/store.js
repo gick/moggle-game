@@ -64,7 +64,8 @@ export default {
       state:{
         users:[],
         id:'',
-        email:''
+        email:'',
+        socketID:''
       },
       mutations:{
         setUser(state,payload){
@@ -74,7 +75,11 @@ export default {
         logout(state){
           state.id=''
           state.email=''
+        },
+        setSocketID(state,socketID){
+          state.socketID=socketID
         }
+
       },
       actions:{        
       bindTodos: firestoreAction(({ bindFirestoreRef }) => {
@@ -99,7 +104,8 @@ export default {
         startActivity: false,
         currentPage: 0,
         score:0,
-        test:[]
+        test:[],
+        foliaData:{}
       },
       mutations: {
         set(state, activities) {
@@ -182,10 +188,11 @@ export default {
 
           }
           if(currentUnitGame.foliaActivities){
+            state.foliaData=currentUnitGame.foliaActivities
             state.pages.push({
               page:Folia,
               data:{
-                data:currentUnitGame.foliaActivities
+                data:{}
               }
             })
           }
@@ -219,7 +226,7 @@ export default {
               commit('setCurrentActivity', state.currentActivity)
             } else {
               commit('endGame')
-              commit('navigator/pop', null, {
+              commit('navigator/reset', null, {
                 root: true
               })
             }

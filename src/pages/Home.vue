@@ -23,7 +23,11 @@ export default {
       return this.$store.state.activities.activities
     }
   },
-
+  sockets:{
+      setID(socketID){
+        this.$store.commit('users/setSocketID',socketID)
+      }
+  },
   methods: {
     startActivity(activity){
       this.$store.commit('activities/setCurrentActivity',activity)

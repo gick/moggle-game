@@ -3,17 +3,23 @@
     <game-toolbar title="Folia"></game-toolbar>
     <div class="background"></div>
     <div class="content" style>
-          {{data}}
-
+      {{data}}
       <v-ons-card>
-        <div class="title">Identifier une feuille</div>
+        <div class="title">{{foliaData.question}}</div>
         <div class="content">
           <p>Prenez une photo de feuille puis réaliser un tracé à l'intérieur de la feuille</p>
           <FileUpload @image="setImage"></FileUpload>
-          <v-ons-button :disabled="(foliaStarted || !draw)" @click="sendImages">Identifier</v-ons-button>
           <v-ons-button @click="restart" v-if="foliaResult.length">Nouvelle identification</v-ons-button>
+          <v-ons-button @click="next">Suivant</v-ons-button>
         </div>
       </v-ons-card>
+      <v-ons-cars v-if="successVisible">
+        <div class="title">Résultat : {{foliaData.correctMessage}}</div>
+      </v-ons-cars>
+      <v-ons-cars v-if="failedVisible">
+        <div class="title">Résultat : {{foliaData.wrongMessage}}</div>
+      </v-ons-cars>
+
       <v-ons-card v-if="foliaStarted">
         <div class="title">Identification via Folia</div>
         <div class="content">
@@ -50,6 +56,7 @@
         <p>Réalisez un tracé à l'intérieur de la feuille puis valider</p>
         <v-ons-button
           style="position: absolute;left: 0;right: 0;bottom: 1px"
+          :disabled="!draw"
           @click="sendImages"
         >Valider</v-ons-button>
       </v-ons-modal>
@@ -73,11 +80,11 @@ export default {
       height: "0",
       currentStep: 0,
       foliaStarted: false,
-      socketID: "",
       foliaResult: [],
       draw: false,
       modalVisible: false,
-      data: {}
+      successVisible: false,
+      failedVisible: false
     };
   },
   components: {
@@ -85,23 +92,50 @@ export default {
     FileUpload
   },
   sockets: {
-    connect: function(socket) {},
+    connect: function(socket) {
+      console.log(this.data);
+    },
     foliaProgress: function(data) {
       this.currentStep = this.currentStep + 4;
     },
     foliaResult: function(data) {
+      let success = false;
+      let result = false;
       for (let specieResult of data) {
         let specie = specieResult.split(",")[0].replace(/([A-Z])/g, " $1");
         let result = Math.ceil(Number(specieResult.split(",")[1]));
-        this.foliaResult.push({ specie: specie, result: result });
+        this.foliaResult.push({ specie: specie.trim(), result: result });
       }
-      console.log(data);
+      for (let target of this.foliaData.targetSpecies) {
+        let findTarget = this.foliaResult.find(
+          value => value.specie == target.label
+        );
+        if (findTarget) {
+          result = true;
+        }
+      }
+      if (result) {
+        this.successVisible = true;
+      } else {
+        this.failedVisible = true;
+      }
+    }
+    //  setID(socketID) {
+    //    this.socketID = socketID;
+    //  }
+  },
+  computed: {
+    socketID() {
+      return this.$store.state.users.socketID;
     },
-    setID(socketID) {
-      this.socketID = socketID;
+    foliaData() {
+      return this.$store.state.activities.foliaData;
     }
   },
   methods: {
+    next() {
+      this.$store.dispatch("activities/nextPage");
+    },
     onBegin() {
       this.draw = true;
     },

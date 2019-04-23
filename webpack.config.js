@@ -101,7 +101,8 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    noInfo: true
+    noInfo: true,
+    proxy:{'/file': 'http://localhost:8080'}
   },
   performance: {
     hints: false

@@ -74,12 +74,6 @@ export default {
           icon: this.md ? null : "ion-edit",
           page: Forms,
           theme: blue
-        },
-        {
-          label: "Folia",
-          icon: this.md ? null : "ion-film-marker",
-          page: Folia,
-          theme: purple
         }
       ]
     };

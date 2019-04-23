@@ -3,6 +3,10 @@
     <div class="center">
       <slot>{{ title }}</slot>
     </div>
+    <div v-if="currentPage>0" class="left">
+        <v-ons-back-button></v-ons-back-button>
+    </div>
+
     <div class="right">
       <v-ons-toolbar-button id="info-button" @click="popoverVisible = true">
         <v-ons-icon icon="md-more-vert"></v-ons-icon>
@@ -36,6 +40,11 @@ import Inventory from "../pages/Inventory.vue";
 
 export default {
   props: ["title"],
+  computed:{
+    currentPage(){
+      return this.$store.state.activities.currentPage
+    }
+  },
   data() {
     return {
       popoverVisible: false,

@@ -3,28 +3,26 @@
     <div class="title">{{mcq.question}}</div>
     <div class="content">
       <v-ons-list>
-        <v-ons-list-item tappable>
+        <v-ons-list-item v-for="(response, $index) in responses" :key="$index" tappable>
           <label class="left">
-            <v-ons-radio modifier="material" input-id="correct" :value="mcq.response" v-model=" currentResponse"></v-ons-radio>
-          </label>
-          <label v-if="!mcq.imageMode" for="correct" class="center">{{ mcq.response }}</label>
-          <ImagePreview :image-id="mcq.response" v-if="mcq.imageMode"></ImagePreview>
-        </v-ons-list-item>
-        <v-ons-list-item v-for="(response, $index) in mcq.distractors" :key="$index" tappable>
-          <label class="left">
-            <v-ons-radio modifier="material"
+            <v-ons-radio
+              modifier="material"
               :input-id="'radio-' + $index"
-              :value="response.value"
-              v-model=" currentResponse"
+              :value="response"
+              v-model="currentResponse"
             ></v-ons-radio>
           </label>
-          <label :for="'radio-' + $index" class="center" v-if="!mcq.imageMode">{{ response.value }}</label>
-          <ImagePreview :image-id="response.value" v-if="mcq.imageMode"></ImagePreview>
+          <label :for="'radio-' + $index" class="center" v-if="!mcq.imageMode">{{ response }}</label>
+          <ImagePreview :image-id="response" v-if="mcq.imageMode"></ImagePreview>
         </v-ons-list-item>
         <v-ons-list-item>
           <div class="center">
-              <v-ons-button @click="validate">Valider</v-ons-button>
+            <v-ons-button :disabled="!currentResponse.length || showSuccess || showFail" @click="validate">Valider</v-ons-button>
           </div>
+        </v-ons-list-item>
+        <v-ons-list-item>
+          <div v-if="showSuccess" class="center">{{mcq.correctMessage}}</div>
+          <div v-if="showFail" class="center">{{mcq.wrongMessage}}</div>
         </v-ons-list-item>
       </v-ons-list>
     </div>
@@ -32,23 +30,58 @@
 </template>
 
 <script>
-import ImagePreview from './ImagePreview.vue'
+import ImagePreview from "./ImagePreview.vue";
 export default {
   data() {
     return {
-      currentResponse: ""
+      currentResponse: "",
+      showSuccess: false,
+      showFail: false
     };
   },
-  components:{
+  components: {
     ImagePreview
   },
   props: {
     mcq: Object
   },
-  computed: {},
+  computed: {
+    responses() {
+      let responseArray = [this.mcq.response];
+      Array.prototype.push.apply(
+        responseArray,
+        this.mcq.distractors.map(val => val.value)
+      );
+      return this.shuffle(responseArray);
+    }
+  },
 
   methods: {
     validate() {
+      if (this.currentResponse == this.mcq.response) {
+        this.showSuccess = true;
+      } else {
+        this.showFail = true;
+      }
+    },
+    shuffle(array) {
+      var currentIndex = array.length,
+        temporaryValue,
+        randomIndex;
+
+      // While there remain elements to shuffle...
+      while (0 !== currentIndex) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+      }
+
+      return array;
     }
   }
 };
