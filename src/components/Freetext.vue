@@ -43,6 +43,8 @@ export default {
     validate() {
         if(this.response.toLowerCase()==this.freetext.response.toLowerCase()){
             this.correct=true
+            this.$ons.notification.toast('Vous avez gagner '+this.freetext.score+' points',{ timeout: 2000 } )
+            this.$store.commit('activities/addScore',this.freetext.score)
         } 
         else{
             this.incorrect=true

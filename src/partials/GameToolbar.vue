@@ -1,7 +1,7 @@
 <template>
   <v-ons-toolbar>
     <div class="center">
-      <slot>{{ title }}</slot>
+      <slot>{{ title }} {{$store.state.activities.score}}</slot>
     </div>
     <div v-if="currentPage>0" class="left">
         <v-ons-back-button></v-ons-back-button>

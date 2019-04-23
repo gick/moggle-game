@@ -112,7 +112,7 @@ export default {
           state.activities = activities
         },
         addScore(state,point){
-
+          state.score=state.score+point
         },
         nextPage(state) {
           state.currentPage++

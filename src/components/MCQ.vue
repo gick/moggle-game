@@ -15,16 +15,20 @@
           <label :for="'radio-' + $index" class="center" v-if="!mcq.imageMode">{{ response }}</label>
           <ImagePreview :image-id="response" v-if="mcq.imageMode"></ImagePreview>
         </v-ons-list-item>
-        <v-ons-list-item>
+        <v-ons-list-item v-if="!(correct || incorrect)">
           <div class="center">
             <v-ons-button :disabled="!currentResponse.length || showSuccess || showFail" @click="validate">Valider</v-ons-button>
           </div>
+
         </v-ons-list-item>
         <v-ons-list-item>
           <div v-if="showSuccess" class="center">{{mcq.correctMessage}}</div>
           <div v-if="showFail" class="center">{{mcq.wrongMessage}}</div>
         </v-ons-list-item>
       </v-ons-list>
+          <p v-if="correct"><v-ons-icon icon="fa-check-circle"></v-ons-icon> {{mcq.correctMessage}}</p>
+          <p v-if="incorrect"><v-ons-icon icon="fa-times-circle"></v-ons-icon> {{mcq.wrongMessage}}</p>
+
     </div>
   </v-ons-card>
 </template>
@@ -35,8 +39,13 @@ export default {
   data() {
     return {
       currentResponse: "",
+<<<<<<< HEAD
       showSuccess: false,
       showFail: false
+=======
+        correct:false,
+        incorrect:false
+>>>>>>> bc65aca06960beed4c457dd986d8d1b39845a29a
     };
   },
   components: {
@@ -58,6 +67,7 @@ export default {
 
   methods: {
     validate() {
+<<<<<<< HEAD
       if (this.currentResponse == this.mcq.response) {
         this.showSuccess = true;
       } else {
@@ -82,6 +92,16 @@ export default {
       }
 
       return array;
+=======
+        if(this.mcq.response.toLowerCase()==this.currentResponse.toLowerCase()){
+            this.correct=true
+            this.$ons.notification.toast('+ '+this.mcq.score+' pts',{ timeout: 2000 } )
+            this.$store.commit('activities/addScore',this.mcq.score)
+        } 
+        else{
+            this.incorrect=true
+        }
+>>>>>>> bc65aca06960beed4c457dd986d8d1b39845a29a
     }
   }
 };

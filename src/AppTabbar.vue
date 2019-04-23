@@ -64,7 +64,7 @@ export default {
         }
         ,
         {
-          label: "Home",
+          label: "Games",
           icon: this.md ? null : "ion-home",
           page: Home,
           theme: red
