@@ -11,16 +11,12 @@
 
 <script>
 import AppSplitter from "./AppSplitter.vue";
+import GameToolBar from "./partials/GameToolbar.vue";
 import axios from "axios";
 export default {
   beforeCreate() {
 
     this.$store.commit("navigator/push", AppSplitter);
-    axios.get("http://localhost:8080/listActivities").then(
-      function(response) {
-        this.$store.commit("activities/set", response.data);
-      }.bind(this)
-    );
   },
   data() {
     return {
@@ -35,30 +31,22 @@ export default {
         let pageIndex = this.$store.state.activities.currentPage;
         let currentPage = this.$store.state.activities.pages[pageIndex];
         this.$store.commit("navigator/push", {
-          extends: currentPage.page,
+          extends: GameToolBar,
           data() {
-            return currentPage.data;
+            return {};
           }
         });
       }else{
-        this.activity=false
+        this.setBadge()
       }
     },
-    currentPage: function(pageNumber) {
-      if(this.activity){
-      let pageIndex = this.$store.state.activities.currentPage;
-      let currentPage = this.$store.state.activities.pages[pageIndex];
-      this.$store.commit("navigator/push", {
-        extends: currentPage.page,
-        data() {
-          return currentPage.data;
-        }
-      });
-    }}
   },
   computed: {
-    currentPage() {
-      return this.$store.state.activities.currentPage;
+    userBadge(){
+      return this.$store.state.activities.badge;
+    },
+    allBadge(){
+      return this.$store.state.users.badges
     },
     startActivity() {
       return this.$store.state.activities.startActivity;
@@ -74,6 +62,18 @@ export default {
     }
   },
   methods: {
+    setBadge(){
+      if(this.userBadge){
+        let index=this.allBadge.find(val=>val._id==this.userBadge._id)
+        if(index==-1){
+        this.$toasted.show('Vous avez gagné un badge en complétant ce jeux!',{ duration: 3000,position:'bottom-center',theme:'bubble' } )
+        this.$store.dispatch('activities/setBadge')
+        }
+        else{
+         this.$toasted.show('Vous possedez déjà le badge de ce jeu!',{ duration: 3000,position:'bottom-center',theme:'bubble' } )
+        }
+      }
+    },
     storePop() {
       this.$store.commit("navigator/pop");
     },

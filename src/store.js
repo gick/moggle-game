@@ -5,13 +5,18 @@ import Radar from './pages/Radar.vue'
 import MediaPage from './pages/MediaPage.vue'
 import Question from './pages/Question.vue'
 import Folia from './pages/Folia.vue'
-import {auth,firestore} from './firebase'
-import { vuexfireMutations, firestoreAction } from 'vuexfire'
+import axios from 'axios'
+import {
+  auth,
+  firestore
+} from './firebase'
+import {
+  vuexfireMutations,
+  firestoreAction
+} from 'vuexfire'
 
 export default {
-  mutations:{
-    ...vuexfireMutations
-  },
+  mutations: {},
   modules: {
     navigator: {
       strict: true,
@@ -58,39 +63,91 @@ export default {
         }
       }
     },
-    users:{
-      strict:true,
-      namespaced:true,
-      state:{
-        users:[],
-        id:'',
-        email:'',
-        socketID:''
+    users: {
+      strict: true,
+      namespaced: true,
+      state: {
+        userList: [],
+        inventory:0,
+        inventoryItems:[],
+        id: '',
+        email: '',
+        socketID: '',
+        scores: [],
+        badges: [],
+        profilBadge:0
       },
-      mutations:{
-        setUser(state,payload){
-          state.id=payload.uid
-          state.email=payload.email
+      mutations: {
+        setUser(state, payload) {
+          state.id = payload.uid
+          state.email = payload.email
         },
-        logout(state){
-          state.id=''
-          state.email=''
+        setInventoryItem(state,inventoryItem){
+          state.inventoryItems.push(inventoryItem)
+          state.inventory++
         },
-        setSocketID(state,socketID){
-          state.socketID=socketID
+        resetInventoryBadge(state){
+          state.inventory=0
+        },
+        resetProfilBadge(state){
+          state.profilBadge=0
+        }
+        ,
+        setBadge(state,badge){
+          let index = state.badges.findIndex(val => val._id == badge._id)
+          if(index==-1){
+            state.profilBadge++
+            axios.post('/api/badges',{badge:badge,id:state.id})
+            state.badges.push(badge)
+          }
+
+        }
+        ,
+        logout(state) {
+          state.id = ''
+          state.email = ''
+        },
+        setSocketID(state, socketID) {
+          state.socketID = socketID
         }
 
       },
-      actions:{        
-      bindTodos: firestoreAction(({ bindFirestoreRef }) => {
-        // return the promise returned by `bindFirestoreRef`
-        console.log('test')
-        return bindFirestoreRef('users', firestore.collection('users'))
-      }),
-      
-      
-
-    }},
+      actions: {
+        getUsersData({
+          state
+        }) {
+          return axios.get('/api/userData').then(function (response) {
+            let user = response.data.find(val => val.userId == state.id)
+            if (!user) return
+            state.scores = user.score
+            for(let badge of user.badge){
+              state.badges.push(badge)
+            }
+          })
+        },
+        setScore({
+          state
+        }, data) {
+          let index = state.scores.findIndex(val => val.activity == data.activityId)
+          if (index != -1) {
+            state.scores.splice(index, 1, {
+              activity: data.activityId,
+              score: data.score
+            })
+          } else {
+            state.scores.push({
+              activity: data.activityId,
+              score: data.score
+            })
+          }
+          axios.post('/api/score', {
+            id: state.id,
+            score: data.score,
+            activityId: data.activityId
+          })
+        }
+      }
+    },
     activities: {
       strict: true,
       namespaced: true,
@@ -100,19 +157,19 @@ export default {
         currentActivity: {},
         unitGameIndex: 0,
         pages: [],
-        userId:'',
+        userId: '',
         startActivity: false,
         currentPage: 0,
-        score:0,
-        test:[],
-        foliaData:{}
+        score: 0,
+        badge: {},
+        foliaData: {}
       },
       mutations: {
         set(state, activities) {
           state.activities = activities
         },
-        addScore(state,point){
-          state.score=state.score+point
+        addScore(state, point) {
+          state.score = state.score + point
         },
         nextPage(state) {
           state.currentPage++
@@ -120,96 +177,120 @@ export default {
         nextUnitGame(state) {
           state.unitGameIndex++
         },
+        previousPage(state) {
+          state.currentPage--
+        },
         endGame(state) {
           state.startActivity = false
           state.pages = []
           state.currentPage = 0
           state.currentUnitGame = 0
-          state.unitGameIndex=0
+          state.unitGameIndex = 0
+          state.score = 0
         },
         setCurrentActivity(state, activity) {
           state.currentActivity = activity
           state.pages = []
-          if (state.unitGameIndex == 0) {
-            if (state.currentActivity.startpage) {
-              state.pages.push({
+          if (state.currentActivity.startpage) {
+            state.pages.push({
+              title:'Information',
+              page: MediaPage,
+              props: {
+                page: state.currentActivity.startpage
+              }
+            })
+          }
+
+          for (let currentUnitGame of activity.unitgameActivities) {
+            let unitGamePages = []
+            if (currentUnitGame.startMedia) {
+              unitGamePages.push({
+                title:'Information',
+                label: 'start',
                 page: MediaPage,
-                data: {
-                  page: state.currentActivity.startpage
+                props: {
+                  page: currentUnitGame.startMedia
                 }
               })
             }
-          }
+            if (currentUnitGame.POI) {
+              if (currentUnitGame.poiGuidance == 'qr') {
+                unitGamePages.push({
 
-          let currentUnitGame = activity.unitgameActivities[state.unitGameIndex]
-          if (currentUnitGame.startMedia) {
-            state.pages.push({
-              page: MediaPage,
-              data: {
-                page: currentUnitGame.startMedia
+                  title:'Validation QR code',
+                  label: 'guidance',
+                  page: QRCode,
+                  props: {
+                    id: currentUnitGame.POI._id
+                  }
+                })
               }
-            })
-          }
-          if (currentUnitGame.POI) {
-            if (currentUnitGame.poiGuidance == 'qr') {
-              state.pages.push({
-                page: QRCode,
+              if (currentUnitGame.poiGuidance == 'radar') {
+                unitGamePages.push({
+                  title:'Radar',
+                  label: 'guidance',
+                  page: Radar,
+                  props: {
+                    poi: currentUnitGame.POI
+                  }
+                })
+              }
+
+              if (currentUnitGame.poiGuidance == 'map') {
+                unitGamePages.push({
+                  title:'Carte',
+                  label: 'guidance',
+                  page: Map,
+                  props: {
+                    poi: currentUnitGame.POI
+                  }
+                })
+              }
+            }
+            if (currentUnitGame.mcqActivities.length || currentUnitGame.freetextActivities.length) {
+              unitGamePages.push({
+                title:'Questions',
+                label: 'activities',
+                page: Question,
+                props: {
+                  mcq: currentUnitGame.mcqActivities,
+                  freetext: currentUnitGame.freetextActivities
+                }
+              })
+
+            }
+            if (currentUnitGame.foliaActivities) {
+              state.foliaData = currentUnitGame.foliaActivities
+              unitGamePages.push({
+                title:'Reconnaissance de feuille',
+                page: Folia,
                 data: {
-                  id: currentUnitGame.POI._id
+                  label: 'activities',
+                  data: {}
                 }
               })
             }
-            if (currentUnitGame.poiGuidance == 'radar') {
-              state.pages.push({
-                page: Radar,
-                data: {
-                  poi: currentUnitGame.POI
+            if (currentUnitGame.feedbackMedia) {
+              unitGamePages.push({
+                title:'Information',
+                page: MediaPage,
+                props: {
+                  page: currentUnitGame.feedbackMedia
                 }
               })
             }
-
-            if (currentUnitGame.poiGuidance == 'map') {
-              state.pages.push({
-                page: Map,
-                data: {
-                  poi: currentUnitGame.POI
-                }
-              })
+            if (currentUnitGame.inventoryItem && currentUnitGame.inventoryStep) {
+              let reversed = unitGamePages.reverse()
+              let pageWithInventory = reversed.find(val => val.label == currentUnitGame.inventoryStep)
+              if (pageWithInventory) {
+                pageWithInventory.props.inventoryItem = currentUnitGame.inventoryItem
+              }
+              unitGamePages.reverse()
             }
+            state.pages=state.pages.concat(unitGamePages)
           }
-          if (currentUnitGame.mcqActivities.length || currentUnitGame.freetextActivities.length) {
-            state.pages.push({
-              page: Question,
-              data: {
-                mcq: currentUnitGame.mcqActivities,
-                freetext: currentUnitGame.freetextActivities
-              }
-            })
-
-          }
-          if(currentUnitGame.foliaActivities){
-            state.foliaData=currentUnitGame.foliaActivities
-            state.pages.push({
-              page:Folia,
-              data:{
-                data:{}
-              }
-            })
-          }
-          if (currentUnitGame.feedbackMedia) {
-            state.pages.push({
-              page: MediaPage,
-              data: {
-                page: currentUnitGame.feedbackMedia
-              }
-            })
-          }
-          if (state.currentActivity.unitgameActivities.length == state.unitGameIndex) {
-
-            state.pages.push({
-              page: GameEnd,
-              data: {}
-            })
+          if(state.currentActivity.badge){
+            state.badge=state.currentActivity.badge
           }
           state.currentPage = 0
           state.startActivity = true
@@ -217,31 +298,35 @@ export default {
       },
       actions: {
         nextPage({
+          dispatch,
           commit,
           state
         }) {
           if (state.currentPage == state.pages.length - 1) {
-            if (state.currentActivity.unitgameActivities.length - 1 > state.unitGameIndex) {
-              commit('nextUnitGame')
-              commit('setCurrentActivity', state.currentActivity)
-            } else {
-              commit('endGame')
-              commit('navigator/reset', null, {
-                root: true
-              })
-            }
+            dispatch('users/setScore', {
+              activityId: state.currentActivity._id,
+              score: state.score
+            }, {
+              root: true
+            })
+            commit('endGame')
+            commit('navigator/reset', null, {
+              root: true
+            })
           } else {
             commit('nextPage')
           }
         },
-
+        setBadge({commit,state}){
+          commit('users/setBadge',state.badge,{root:true})
+        }
       }
     },
     tabbar: {
       strict: true,
       namespaced: true,
       state: {
-        index: 1
+        index: 0
       },
       mutations: {
         set(state, index) {

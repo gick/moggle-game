@@ -16,7 +16,7 @@
           </div>
         </ons-list-item>
       </v-ons-list>
-      <v-ons-button modifier="large" class="center" @click="validate">Valider</v-ons-button>
+      <v-ons-button modifier="large" :disabled="correct||incorrect" class="center" @click="validate">Valider</v-ons-button>
 
       <p v-if="correct"><v-ons-icon icon="fa-check-circle"></v-ons-icon> {{freetext.correctMessage}}</p>
       <p v-if="incorrect"><v-ons-icon icon="fa-times-circle"></v-ons-icon> {{freetext.wrongMessage}}</p>
@@ -43,7 +43,7 @@ export default {
     validate() {
         if(this.response.toLowerCase()==this.freetext.response.toLowerCase()){
             this.correct=true
-            this.$ons.notification.toast('Vous avez gagner '+this.freetext.score+' points',{ timeout: 2000 } )
+            this.$ons.notification.toast('Vous avez gagner '+this.freetext.score+' points',{ duration:2000,position:'bottom-center',theme:'bubble' } )
             this.$store.commit('activities/addScore',this.freetext.score)
         } 
         else{

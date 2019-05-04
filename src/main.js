@@ -14,6 +14,9 @@ import VueOnsen from 'vue-onsenui'; // For UMD
 // import * as OnsenComponents from './onsen-components'; // For ESM
 import storeLike from './store.js';
 import CustomToolbar from './partials/CustomToolbar.vue';
+import Toasted from 'vue-toasted';
+
+
 import AppNavigator from './AppNavigator.vue';
 import GameToolbar from './partials/GameToolbar.vue'
 import L from 'leaflet';
@@ -24,6 +27,7 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
+
 Vue.use(new VueSocketIO({
   debug: true,
   connection: 'http://localhost:8080/',
@@ -33,7 +37,7 @@ Vue.use(new VueSocketIO({
       mutationPrefix: 'SOCKET_'
   } ,
 }))
-
+Vue.use(Toasted)
 Vue.use(Vuex);
 Vue.use(VueOnsen);
 Vue.use(VueSimpleMarkdown)

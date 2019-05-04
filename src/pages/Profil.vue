@@ -1,26 +1,28 @@
 <template>
   <v-ons-page>
-    <v-ons-card>
-      <vue-simple-markdown :source="page.mkdown"></vue-simple-markdown>
+      <div class="content">
+    <v-ons-card v-for="(badge,index) in badges" v-bind:key="index+'badges'">
+        <GameBadge :item="badge"></GameBadge>
     </v-ons-card>
-    <v-ons-button @click="next">Suivant</v-ons-button>
+    </div>
   </v-ons-page>
 </template>
 
 <script>
+import GameBadge from '../components/GameBadge.vue'
 export default {
   data() {
     return {
-      page: {},
-      inventoryItem:{},
     };
   },
-  computed: {},
+  components:{GameBadge},
+  computed: {
+      badges(){
+          return this.$store.state.users.badges
+      }
+  },
 
   methods: {
-    next() {
-      this.$store.dispatch("activities/nextPage");
-    }
   }
 };
 </script>

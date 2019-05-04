@@ -1,8 +1,5 @@
 <template>
   <v-ons-page>
-        <game-toolbar title="Map">
-    </game-toolbar>
-
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" style="height: 60vh">
       <l-marker :lat-lng.sync="position"></l-marker>
       <l-circle
@@ -13,7 +10,13 @@
 
       <l-tile-layer :url="url" :options="mapOptions" :attribution="attribution"/>
     </l-map>
-    <v-ons-button @click="next">Suivant</v-ons-button>
+    <p v-show="completed" style="text-align:center;">
+      <v-ons-button @click="next">Suivant</v-ons-button>
+    </p>
+    <p style="text-align:center;">
+      <v-ons-button @click="complete">Compléter l'activité</v-ons-button>
+    </p>
+
   </v-ons-page>
 </template>
 
@@ -31,7 +34,7 @@ import {
 export default {
   data() {
     return {
-      poi: {},
+      completed:false,
       map: null,
       zoom: 19,
       center: L.latLng(48.08497, -0.75763),
@@ -45,6 +48,7 @@ export default {
       }
     };
   },
+  props:["poi","inventoryItem"],
   components: {
     LCircle,
     LMap,
@@ -102,10 +106,18 @@ export default {
       this.position = [e.coords.latitude, e.coords.longitude];
       let dist=this.distance(this.position[0],this.position[1],this.poi.latitude,this.poi.longitude,'M')
       if(dist<=this.poi.map.areaRadius){
-        this.reached=true
-        this.$ons.notification.alert("Vous avez atteint la destination",{title:"Destination atteinte"})
+        this.complete()
       }
     }
+    ,
+    complete(){
+      this.completed=true
+      this.$toasted.show('Bravo, vous avez atteint la destination',{ duration: 2000,position:'top-center',theme:'bubble' } )
+      if(this.inventoryItem){
+      this.$toasted.show('Vous avez gagné un item d\'inventaire',{ duration: 3000,position:'bottom-center' } )
+      this.$store.commit('users/setInventoryItem',this.inventoryItem)
+      }
+   }
   }
 };
 </script>

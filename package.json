@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.19",
     "browser-image-compression": "^1.0.2",
     "exif-orientation-image": "^1.0.1",
     "firebase": "^5.9.4",
@@ -25,6 +27,7 @@
     "vue-signature-pad": "^1.1.9-beta.1",
     "vue-simple-markdown": "^1.0.9",
     "vue-socket.io": "^3.0.7",
+    "vue-toasted": "^1.1.26",
     "vue2-leaflet": "^2.0.3",
     "vuex": "^3.0.1",
     "vuexfire": "^3.0.0-alpha.16"

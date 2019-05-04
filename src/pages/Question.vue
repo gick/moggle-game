@@ -1,7 +1,5 @@
 <template>
   <v-ons-page>
-        <game-toolbar title="Questions">
-    </game-toolbar>
 
       <div v-for="(question,index) in mcq" :key="index">
       <MCQ :mcq="question"></MCQ>
@@ -9,9 +7,6 @@
       <div v-for="(question,index2) in freetext" :key="index2">
       <Freetext :freetext="question"></Freetext>
       </div>
-
-      {{mcq}}
-      {{freetext}}
       <v-ons-button @click="next">Suivant</v-ons-button>
   </v-ons-page>
 </template>
@@ -22,10 +17,11 @@ import Freetext from '../components/Freetext.vue'
 export default {
   data () {
     return {
-        mcq:{},
-        freetext:{}
+            inventoryItem:{},
     };
   },
+  props:['mcq','freetext']
+  ,
   computed:{
   },
   components:{

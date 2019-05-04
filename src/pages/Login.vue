@@ -27,9 +27,12 @@
     <div v-show="uid.length>0">
       <v-ons-card>
         <div class="title">Bienvenue dans Moggle</div>
+        <div class="content">
+          Vous pouvez accéder aux jeux et à votre profil en Swippant
+        </div>
         <p style="text-align:center">
         <v-ons-button @click="logout">Se déconnecter</v-ons-button>
-</p>
+        </p>
       </v-ons-card>
     </div>
   </v-ons-page>

@@ -27,11 +27,12 @@
 <script>
 import Camera from "./pages/Camera.vue";
 import Home from "./pages/Home.vue";
-import Forms from "./pages/Forms.vue";
+import Profil from "./pages/Profil.vue";
 import Login from "./pages/Login.vue";
-import Folia from "./pages/Folia.vue"
+import axios from 'axios'
+import Folia from "./pages/Folia.vue";
 import Animations from "./pages/Animations.vue";
-import {auth} from './firebase'
+import { auth } from "./firebase";
 // Just a linear interpolation formula
 const lerp = (x0, x1, t) => parseInt((1 - t) * x0 + t * x1, 10);
 // RGB colors
@@ -47,47 +48,29 @@ export default {
       colors: red,
       animationOptions: {},
       topPosition: 0,
-      tabs: [
-        {
-          label: this.md ? null : "Camera",
-          icon: "ion-camera, material:md-camera",
-          page: Camera,
-          theme: red,
-          style: this.md ? { maxWidth: "60px" } : {},
-          top: -105 // Toolbar + Tabbar heights
-        },
-        {
-          label: "Login",
-          icon: this.md ? null : "ion-home",
-          page: Login,
-          theme: red
-        }
-        ,
-        {
-          label: "Games",
-          icon: this.md ? null : "ion-home",
-          page: Home,
-          theme: red
-        },
-        {
-          label: "Forms",
-          icon: this.md ? null : "ion-edit",
-          page: Forms,
-          theme: blue
-        }
-      ]
     };
   },
   mounted() {
-    auth.onAuthStateChanged(function(user) {
-      if (user) {
-        this.$store.commit('users/setUser',user)
-        // User is signed in.
-      } else {
-        this.$store.commit('users/logout')
-        // No user is signed in.
-      }
-    }.bind(this));
+    auth.onAuthStateChanged(
+      function(user) {
+        if (user) {
+          this.$store.commit("users/setUser", user);
+          this.$store.dispatch("users/getUsersData").then(
+            function() {
+              axios.get("api/listActivities").then(
+                function(response) {
+                  this.$store.commit("activities/set", response.data);
+                }.bind(this)
+              );
+            }.bind(this)
+          );
+          // User is signed in.
+        } else {
+          this.$store.commit("users/logout");
+          // No user is signed in.
+        }
+      }.bind(this)
+    );
   },
   methods: {
     onSwipe(index, animationOptions) {
@@ -125,6 +108,33 @@ export default {
   },
 
   computed: {
+    badge(){
+      return this.$store.state.users.profilBadge
+    },
+    tabs(){
+      return [
+        {
+          label: "Login",
+          icon: "ion-home",
+          page: Login,
+          theme: red
+        },
+        {
+          label: "Jeux",
+          icon: "md-puzzle-piece",
+          page: Home,
+          theme: red
+        },
+        {
+          label: "Profil",
+          icon: "md-face",
+          page: Profil,
+          theme: blue,
+          badge:this.badge? this.badge:null
+        }
+      ]
+
+    },
     index: {
       get() {
         return this.$store.state.tabbar.index;
