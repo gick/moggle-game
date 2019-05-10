@@ -1,6 +1,5 @@
 <template>
   <v-ons-page>
-    <game-toolbar title="QR code"></game-toolbar>
     <p>Prendre en photo un QR-code</p>
     <picture-input
       ref="pictureInput"
@@ -22,14 +21,13 @@
       <p>Le QR code n'a pas été reconnu, merci de réessayer</p>
     </v-ons-card>
     <v-ons-card v-show="incorrectQR">
-      <p>Le QR code n'est pas correct, merci de réessayer</p>
+      <p>{{qr.incorrect}}</p>
     </v-ons-card>
     <v-ons-card v-show="correctQR">
-      <p>Bravo vous avez scanné le bon QR code</p>
+      <p>{{qr.correct}}</p>
       <v-ons-button @click="next">Suivant</v-ons-button>
     </v-ons-card>
-          <v-ons-button @click="next">Suivant</v-ons-button>
-
+    <v-ons-button @click="next">Suivant</v-ons-button>
   </v-ons-page>
 </template>
 
@@ -39,7 +37,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      id: "",
       noQR: false,
       incorrectQR: false,
       correctQR: false
@@ -49,38 +46,39 @@ export default {
     PictureInput
   },
   computed: {},
-
+  props: ["qr"],
   methods: {
     next() {
       this.$store.dispatch("activities/nextPage");
     },
     onChange() {
-      this.noQR=false
-      this.incorrectQR=false
-      this.correctQR=false
+      this.noQR = false;
+      this.incorrectQR = false;
+      this.correctQR = false;
       var formData = new FormData();
 
       let file = this.$refs.pictureInput.file;
       formData.append("files", file);
 
       axios
-        .post("http://localhost:8080/qrScan", formData, {
+        .post("/api/qrscan", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
         })
-        .then(function(response) {
-          if (response.data.length == 0) {
-            this.noQR=true
-            return
-          }
-          if(response.data[0]==this.id){
-            this.correctQR=true
-          } else
-          {
-            this.incorrectQR=true
-          }
-        }.bind(this));
+        .then(
+          function(response) {
+            if (response.data.length == 0) {
+              this.noQR = true;
+              return;
+            }
+            if (response.data == this.qr.id) {
+              this.correctQR = true;
+            } else {
+              this.incorrectQR = true;
+            }
+          }.bind(this)
+        );
     }
   }
 };

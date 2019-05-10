@@ -3,7 +3,9 @@
     <v-ons-card>
       <vue-simple-markdown :source="page.mkdown"></vue-simple-markdown>
     </v-ons-card>
-    <v-ons-button @click="next">Suivant</v-ons-button>
+    <p style="text-align:center;">
+      <v-ons-button @click="next">Suivant</v-ons-button>
+    </p>
   </v-ons-page>
 </template>
 
@@ -11,10 +13,10 @@
 export default {
   data() {
     return {
-      page: {},
-      inventoryItem:{},
+      inventoryItem: {}
     };
   },
+  props: ["page"],
   computed: {},
 
   methods: {

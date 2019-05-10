@@ -1,6 +1,5 @@
 <template>
   <v-ons-page>
-    <game-toolbar title="Radar"></game-toolbar>
     <v-ons-card>
       <div class="center">
         <div class="pulse"></div>
@@ -15,17 +14,18 @@
 export default {
   data() {
     return {
-      poi: {},
       dist:10000,
     };
   },
   computed: {},
+  props:['poi'],
   mounted() {
     let options = {
       enableHighAccuracy: true,
       timeout: 1000,
       maximumAge: 0
     };
+    navigator.geolocation.getCurrentPosition(this.locationfound,this.locationerror,options)
     navigator.geolocation.watchPosition(
       this.locationfound,
       this.locationerror,

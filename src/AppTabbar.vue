@@ -5,7 +5,7 @@
       <v-ons-toolbar-button
         slot="right"
         modifier="white-content"
-        @click="$store.commit('splitter/toggle'); showTip(null, 'Try dragging from right edge!')"
+        @click="$store.commit('splitter/toggle');"
       >
         <v-ons-icon icon="ion-navicon, material:md-menu"></v-ons-icon>
       </v-ons-toolbar-button>
@@ -19,19 +19,16 @@
       :tabbar-style="swipeTheme"
       :tabs="tabs"
       :index.sync="index"
-      @postchange="showTip($event, 'Tip: Try swiping pages!')"
     ></v-ons-tabbar>
   </v-ons-page>
 </template>
 
 <script>
-import Camera from "./pages/Camera.vue";
 import Home from "./pages/Home.vue";
 import Profil from "./pages/Profil.vue";
 import Login from "./pages/Login.vue";
 import axios from 'axios'
 import Folia from "./pages/Folia.vue";
-import Animations from "./pages/Animations.vue";
 import { auth } from "./firebase";
 // Just a linear interpolation formula
 const lerp = (x0, x1, t) => parseInt((1 - t) * x0 + t * x1, 10);
@@ -43,7 +40,6 @@ const purple = [103, 58, 183];
 export default {
   data() {
     return {
-      shutUp: !this.md,
       showingTip: false,
       colors: red,
       animationOptions: {},
@@ -89,21 +85,6 @@ export default {
         this.tabs[b].top || 0,
         ratio
       );
-    },
-    showTip(e, message) {
-      if (!this.shutUp && !(e && e.swipe) && !this.showingTip) {
-        this.showingTip = true;
-        this.$ons.notification
-          .toast({
-            message,
-            buttonLabel: "Shut up!",
-            timeout: 2000
-          })
-          .then(i => {
-            this.shutUp = i === 0;
-            this.showingTip = false;
-          });
-      }
     }
   },
 

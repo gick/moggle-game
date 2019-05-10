@@ -93,7 +93,7 @@ export default {
     setPage(page) {
       this.popoverVisible = false;
       if (page == null) {
-        this.$store.commit("activities/endGame");
+        this.$store.dispatch("activities/quitGame");
         this.$store.commit("navigator/pop");
         return;
       }

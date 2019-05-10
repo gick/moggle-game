@@ -18,7 +18,7 @@ export default {
   components:{GameBadge},
   computed: {
       badges(){
-          return this.$store.state.users.badges
+          return this.$store.state.users.allBadges.concat(this.$store.state.users.sessionBadges)
       }
   },
 

@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      shutUp: this.md,
       activity:false
     };
   },
@@ -36,17 +35,19 @@ export default {
             return {};
           }
         });
-      }else{
-        this.setBadge()
       }
     },
+    sessionBadges:function(badges){
+      let lastBadge=badges[badges.length -1]
+      this.showBadgeToast(lastBadge)
+    }
   },
   computed: {
-    userBadge(){
-      return this.$store.state.activities.badge;
+    sessionBadges(){
+      return this.$store.state.users.sessionBadges;
     },
-    allBadge(){
-      return this.$store.state.users.badges
+    allBadges(){
+      return this.$store.state.users.allBadges
     },
     startActivity() {
       return this.$store.state.activities.startActivity;
@@ -62,31 +63,19 @@ export default {
     }
   },
   methods: {
-    setBadge(){
-      if(this.userBadge){
-        let index=this.allBadge.find(val=>val._id==this.userBadge._id)
-        if(index==-1){
+    showBadgeToast(badge){
+        let isNew=this.allBadges.every(val=>val._id!=badge._id)
+        if(isNew){
         this.$toasted.show('Vous avez gagné un badge en complétant ce jeux!',{ duration: 3000,position:'bottom-center',theme:'bubble' } )
-        this.$store.dispatch('activities/setBadge')
         }
         else{
          this.$toasted.show('Vous possedez déjà le badge de ce jeu!',{ duration: 3000,position:'bottom-center',theme:'bubble' } )
         }
-      }
+      
     },
     storePop() {
       this.$store.commit("navigator/pop");
     },
-    showPopTip() {
-      !this.shutUp &&
-        this.$ons.notification
-          .toast({
-            message: "Try swipe-to-pop from left side!",
-            buttonLabel: "Shut up!",
-            timeout: 2000
-          })
-          .then(i => (this.shutUp = i === 0));
-    }
   }
 };
 </script>

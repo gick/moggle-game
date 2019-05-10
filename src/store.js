@@ -74,7 +74,8 @@ export default {
         email: '',
         socketID: '',
         scores: [],
-        badges: [],
+        allBadges: [],
+        sessionBadges:[],
         profilBadge:0
       },
       mutations: {
@@ -91,16 +92,20 @@ export default {
         },
         resetProfilBadge(state){
           state.profilBadge=0
+        },
+        resetInventory(state){
+          state.inventoryItems=[]
+          state.inventory=0
         }
         ,
         setBadge(state,badge){
-          let index = state.badges.findIndex(val => val._id == badge._id)
+          let index = state.allBadges.findIndex(val => val._id == badge._id)
           if(index==-1){
             state.profilBadge++
             axios.post('/api/badges',{badge:badge,id:state.id})
-            state.badges.push(badge)
+           // state.allBadges.push(badge)
           }
-
+          state.sessionBadges.push(badge)
         }
         ,
         logout(state) {
@@ -121,7 +126,7 @@ export default {
             if (!user) return
             state.scores = user.score
             for(let badge of user.badge){
-              state.badges.push(badge)
+              state.allBadges.push(badge)
             }
           })
         },
@@ -187,6 +192,7 @@ export default {
           state.currentUnitGame = 0
           state.unitGameIndex = 0
           state.score = 0
+          state.badge={}
         },
         setCurrentActivity(state, activity) {
           state.currentActivity = activity
@@ -221,7 +227,7 @@ export default {
                   label: 'guidance',
                   page: QRCode,
                   props: {
-                    id: currentUnitGame.POI._id
+                    qr: {id:currentUnitGame.POI._id,correct:currentUnitGame.qrCorrect,incorrect:currentUnitGame.qrIncorrect}
                   }
                 })
               }
@@ -309,7 +315,9 @@ export default {
             }, {
               root: true
             })
+            dispatch('setBadge')
             commit('endGame')
+            commit('users/resetInventory',null,{root:true})
             commit('navigator/reset', null, {
               root: true
             })
@@ -319,6 +327,11 @@ export default {
         },
         setBadge({commit,state}){
           commit('users/setBadge',state.badge,{root:true})
+        },
+        quitGame({dispatch,commit}){
+          commit('endGame')
+          commit('users/resetInventory',null,{root:true})
+
         }
       }
     },
