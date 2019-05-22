@@ -42,8 +42,8 @@
 		</v-ons-toolbar>
 		<v-ons-tabbar
 			hide-tabs
-			position="auto"
-			:modifier="md ? 'autogrow white-content' : ''"
+			position="bottom"
+			:tab-border="false"
 			:tabs="allPages"
 			:index="currentPage"
 		></v-ons-tabbar>

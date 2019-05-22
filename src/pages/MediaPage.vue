@@ -22,6 +22,8 @@ export default {
 
   methods: {
     next() {
+      if(this.$refs.youtube)
+        this.$refs.youtube.player.pauseVideo()
       this.$store.dispatch("activities/nextPage");
     }
   }

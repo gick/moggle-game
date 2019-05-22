@@ -123,7 +123,7 @@ export default {
 		},
 		title() {
 			return this.md
-				? 'Onsen UI'
+				? 'MOGGLE'
 				: this.tabs[this.index].title || this.tabs[this.index].label
 		},
 		swipeTheme() {
