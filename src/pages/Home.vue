@@ -16,9 +16,7 @@
           <div class="list-item__subtitle">Difficulté : {{activity.difficulty}}</div>
           <span class="list-item__subtitle">Durée : {{activity.duration}}</span>
         </div>
-        <div v-show="activity.score" class="right">
-          Score : {{activity.score}} points
-        </div>
+        <div v-show="activity.score" class="right">Score : {{activity.score}} points</div>
       </v-ons-list-item>
     </v-ons-list>
   </v-ons-page>
@@ -27,52 +25,45 @@
 <script>
 export default {
   data() {
-    return {};
+    return {}
   },
   computed: {
     activityList() {
-      for(let activity of this.$store.state.activities.activities){
-        for(let score of this.userScores){
-          if(activity._id==score.activity){
-            activity.score=score.score
+      for (let activity of this.$store.state.activities.activities) {
+        for (let score of this.userScores) {
+          if (activity._id == score.activity) {
+            activity.score = score.score
           }
         }
       }
       return this.$store.state.activities.activities
     },
-    userScores(){
-     return this.$store.state.users.scores
-    }
-
-  },
-  sockets: {
-    setID(socketID) {
-      this.$store.commit("users/setSocketID", socketID);
+    userScores() {
+      return this.$store.state.users.scores
     }
   },
   methods: {
-
     startActivity(activity) {
-      this.$store.commit("activities/setCurrentActivity", activity);
+      this.$store.commit('activities/setCurrentActivity', activity)
     },
     authenticate() {
-      this.$store.dispatch("activities/authenticate");
+      this.$store.dispatch('activities/authenticate')
     },
     push(page, key) {
-      this.$store.commit("navigator/push", {
+      this.$store.commit('navigator/push', {
         extends: page,
         data() {
           return {
             toolbarInfo: {
-              backLabel: "Home",
+              backLabel: 'Home',
               title: key
             }
-          };
+          }
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style>

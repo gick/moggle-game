@@ -1,8 +1,9 @@
 <template>
   <v-ons-page>
-    <v-ons-card>
+    <v-ons-card v-if="page.type=='staticmedia'">
       <vue-simple-markdown :source="page.mkdown"></vue-simple-markdown>
     </v-ons-card>
+    <youtube v-if="page.type=='youtube'" :video-id="page.videoId" fit-parent ref="youtube"></youtube>
     <p style="text-align:center;">
       <v-ons-button @click="next">Suivant</v-ons-button>
     </p>

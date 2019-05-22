@@ -1,5 +1,5 @@
 <template>
-  <v-ons-page>
+  <v-ons-page @show='resetBadges'>
       <div class="content">
     <v-ons-card v-for="(badge,index) in badges" v-bind:key="index+'badges'">
         <GameBadge :item="badge"></GameBadge>
@@ -23,6 +23,9 @@ export default {
   },
 
   methods: {
+    resetBadges(){
+      this.$store.commit('users/resetProfilBadge')
+    }
   }
 };
 </script>

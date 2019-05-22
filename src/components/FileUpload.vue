@@ -1,7 +1,6 @@
 <template>
     <div style="display:inline-block;" class="file-upload-form">
-      <v-ons-button @click="$refs.pictureInput.click()">Photo</v-ons-button>
-
+      <v-ons-button :disabled="disabled" @click="$refs.pictureInput.click()">Photo</v-ons-button>
       <input type="file" @change="previewImage" ref="pictureInput" style="display:none"  accept="image/*;capture=camera">
     </div>
 </template>
@@ -13,6 +12,8 @@ export default {
   data() {
     return { imageData: "" }; // we will store base64 format of image in this string
   },
+  props:['disabled']
+  ,
   methods: {
     previewImage: function(event) {
       // Reference to the DOM input element

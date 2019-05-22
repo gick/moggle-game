@@ -7,7 +7,9 @@
       <div v-for="(question,index2) in freetext" :key="index2">
       <Freetext :freetext="question"></Freetext>
       </div>
-      <v-ons-button @click="next">Suivant</v-ons-button>
+      <p style="text-align:center;margin-top:20px; ">
+        <v-ons-button @click="next">Suivant</v-ons-button>
+      </p>
   </v-ons-page>
 </template>
 
