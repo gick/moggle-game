@@ -59,7 +59,7 @@
           ref="image"
           :src="imageData"
           @load="imageLoaded"
-          style="max-height: 100vh;max-width: 100vw;"
+          style="max-height: 90vh;"
         >
         <VueSignaturePad
           :options="{
