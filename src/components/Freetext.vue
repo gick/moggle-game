@@ -16,8 +16,10 @@
           </div>
         </ons-list-item>
       </v-ons-list>
-      <v-ons-button modifier="large" :disabled="correct||incorrect" class="center" @click="validate">Valider</v-ons-button>
+          <p style="text-align:center;">
 
+      <v-ons-button :disabled="correct||incorrect" class="center" @click="validate">Valider</v-ons-button>
+          </p>
       <p v-if="correct"><v-ons-icon icon="fa-check-circle"></v-ons-icon> {{freetext.correctMessage}}</p>
       <p v-if="incorrect"><v-ons-icon icon="fa-times-circle"></v-ons-icon> {{freetext.wrongMessage}}</p>
 

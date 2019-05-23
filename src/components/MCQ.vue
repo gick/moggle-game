@@ -21,7 +21,7 @@
           </div>
 
         </v-ons-list-item>
-        <v-ons-list-item  modifier="nodivider">
+        <v-ons-list-item  v-show="showSuccess || showFail" modifier="nodivider">
           <div v-if="showSuccess" class="center">{{mcq.correctMessage}}</div>
           <div v-if="showFail" class="center">{{mcq.wrongMessage}}</div>
         </v-ons-list-item>
